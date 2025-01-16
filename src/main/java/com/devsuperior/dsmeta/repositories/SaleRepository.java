@@ -15,6 +15,18 @@ import com.devsuperior.dsmeta.projections.SalesSummaryMinProjection;
 
 public interface SaleRepository extends JpaRepository<Sale, Long> {
 	
+	
+	@Query("SELECT new com.devsuperior.dsmeta.dto.SalesReportDTO(obj) AS dto "
+			+ "FROM Sale AS obj "
+			+ "WHERE obj.date BETWEEN :minDate AND :maxDate "
+			+ "AND UPPER(obj.seller.name) LIKE UPPER(CONCAT('%', :name, '%'))")
+	Page<SalesReportDTO> searchReport(
+			@Param("minDate") LocalDate minDate,
+			@Param("maxDate") LocalDate maxDate,
+			@Param("name") String name,
+			Pageable pageable);
+	
+	
 	//teste:
 	@Query(nativeQuery = true, value = "SELECT tb_seller.name, SUM(tb_sales.amount) "
 			+ "FROM tb_sales "
@@ -24,11 +36,5 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
 			+ "GROUP BY tb_seller.name "
 			+ "ORDER BY tb_seller.name")
 	List<SalesSummaryMinProjection> searchSummary();
-	
-	
-	@Query("SELECT new com.devsuperior.dsmeta.dto.SalesReportDTO(obj) "
-			+ "FROM Sale obj "
-			+ "WHERE obj.date BETWEEN :minDate AND :maxDate")
-	Page<SalesReportDTO> searchReport(@Param("minDate") LocalDate minDate, @Param("maxDate") LocalDate maxDate, Pageable pageable);
-	
+		
 }

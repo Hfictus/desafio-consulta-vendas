@@ -29,11 +29,12 @@ public class SaleService {
 		return new SaleMinDTO(entity);
 	}
 	
-	public Page<SalesReportDTO> getReport(String minDate, String maxDate, Pageable pageable) {
+	public Page<SalesReportDTO> getReport(String minDate, String maxDate, String name, Pageable pageable) {
 
 		LocalDate startDate = LocalDate.parse(minDate);
 		LocalDate endDate = LocalDate.parse(maxDate);
-		Page<SalesReportDTO> dto = repository.searchReport(startDate, endDate, pageable);
+		String upperName = name.toUpperCase();
+		Page<SalesReportDTO> dto = repository.searchReport(startDate, endDate, upperName, pageable);
 		return dto;
 	}
 	
