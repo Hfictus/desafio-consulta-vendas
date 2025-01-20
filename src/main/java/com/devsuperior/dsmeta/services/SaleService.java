@@ -1,6 +1,8 @@
 package com.devsuperior.dsmeta.services;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -30,11 +32,11 @@ public class SaleService {
 	}
 	
 	public Page<SalesReportDTO> getReport(String minDate, String maxDate, String name, Pageable pageable) {
-
-		LocalDate startDate = LocalDate.parse(minDate);
-		LocalDate endDate = LocalDate.parse(maxDate);
-		String upperName = name.toUpperCase();
-		Page<SalesReportDTO> dto = repository.searchReport(startDate, endDate, upperName, pageable);
+		
+		LocalDate endDate = (maxDate.equals("")) ? today() : LocalDate.parse(maxDate);
+		LocalDate startDate = (minDate.equals("")) ? todayMinusYear(endDate) : LocalDate.parse(minDate);
+				
+		Page<SalesReportDTO> dto = repository.searchReport(startDate, endDate, name, pageable);
 		return dto;
 	}
 	
@@ -48,4 +50,12 @@ public class SaleService {
 		return list.stream().map(x -> new SalesSummaryDTO(x)).collect(Collectors.toList());
 	}
 
+	
+	private LocalDate today() {
+		return LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault());
+	}
+	private LocalDate todayMinusYear(LocalDate endDate) {
+		return endDate.minusYears(1L);
+	}
+	
 }
