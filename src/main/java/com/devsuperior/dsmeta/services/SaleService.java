@@ -30,43 +30,34 @@ public class SaleService {
 		Sale entity = result.get();
 		return new SaleMinDTO(entity);
 	}
-	
+		
 	public Page<SalesReportDTO> getReport(String minDate, String maxDate, String name, Pageable pageable) {
+		LocalDate min = minDate.isEmpty() ?
+			todayMinusYear(maxDate.isEmpty() ? today() : LocalDate.parse(maxDate)):
+			LocalDate.parse(minDate);
+		
+		LocalDate max = maxDate.isEmpty() ? today() : LocalDate.parse(maxDate); 
+						
 		Page<SalesReportDTO> dto;
-		if(!minDate.equals("") || !maxDate.equals("")) {
-			if(name.equals("")) {
-				name = " ";
-				dto = repository.searchReport1(processMinDate(minDate, maxDate), processMaxDate(maxDate), pageable);
-				for(SalesReportDTO obj : dto) {
-					obj.setSellerName(name);
-				}
-			}else {
-				dto = repository.searchReport2(processMinDate(minDate, maxDate), processMaxDate(maxDate), name, pageable);
+		if(name.isEmpty()) {
+			dto = repository.searchReport(min, max, name, pageable);
+			for(SalesReportDTO obj : dto) {
+				obj.setSellerName("");
 			}
 		}else {
-			dto = repository.searchReport2(todayMinusYear(today()), today(), name, pageable);
+			dto = repository.searchReport(min, max, name, pageable);
 		}
-				
 		return dto;
 	}
-	
 	
 	//getSummary(String minDate, String maxDate) -> JPQL
 	public List<SalesSummaryDTO> getSummary() {
 
-		//LocalDate startDate = LocalDate.parse(minDate);
-		//LocalDate endDate = LocalDate.parse(maxDate);
 		List<SalesSummaryMinProjection> list = repository.searchSummary();
 		return list.stream().map(x -> new SalesSummaryDTO(x)).collect(Collectors.toList());
 	}
 
-	
-	private LocalDate processMinDate(String minDate, String maxDate) {
-		return (minDate.equals("")) ? todayMinusYear(LocalDate.parse(maxDate)) : LocalDate.parse(minDate);
-	}
-	private LocalDate processMaxDate(String maxDate) {
-		return (maxDate.equals("")) ? today() : LocalDate.parse(maxDate);
-	}
+		
 	private LocalDate today() {
 		return LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault());
 	}

@@ -41,7 +41,8 @@ import com.devsuperior.dsmeta.projections.SalesReportMinProjection;
 			amount = projection.getAmount();
 			sellerName = projection.getName();
 		}
-		
+				
+
 		public Long getId() {
 			return id;
 		}
