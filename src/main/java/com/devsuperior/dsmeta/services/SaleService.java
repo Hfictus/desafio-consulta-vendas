@@ -32,11 +32,21 @@ public class SaleService {
 	}
 	
 	public Page<SalesReportDTO> getReport(String minDate, String maxDate, String name, Pageable pageable) {
-		
-		LocalDate endDate = (maxDate.equals("")) ? today() : LocalDate.parse(maxDate);
-		LocalDate startDate = (minDate.equals("")) ? todayMinusYear(endDate) : LocalDate.parse(minDate);
+		Page<SalesReportDTO> dto;
+		if(!minDate.equals("") || !maxDate.equals("")) {
+			if(name.equals("")) {
+				name = " ";
+				dto = repository.searchReport1(processMinDate(minDate, maxDate), processMaxDate(maxDate), pageable);
+				for(SalesReportDTO obj : dto) {
+					obj.setSellerName(name);
+				}
+			}else {
+				dto = repository.searchReport2(processMinDate(minDate, maxDate), processMaxDate(maxDate), name, pageable);
+			}
+		}else {
+			dto = repository.searchReport2(todayMinusYear(today()), today(), name, pageable);
+		}
 				
-		Page<SalesReportDTO> dto = repository.searchReport(startDate, endDate, name, pageable);
 		return dto;
 	}
 	
@@ -51,11 +61,18 @@ public class SaleService {
 	}
 
 	
+	private LocalDate processMinDate(String minDate, String maxDate) {
+		return (minDate.equals("")) ? todayMinusYear(LocalDate.parse(maxDate)) : LocalDate.parse(minDate);
+	}
+	private LocalDate processMaxDate(String maxDate) {
+		return (maxDate.equals("")) ? today() : LocalDate.parse(maxDate);
+	}
 	private LocalDate today() {
 		return LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault());
 	}
-	private LocalDate todayMinusYear(LocalDate endDate) {
-		return endDate.minusYears(1L);
+	private LocalDate todayMinusYear(LocalDate maxDate) {
+		return maxDate.minusYears(1L);
 	}
+	
 	
 }
