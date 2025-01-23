@@ -7,6 +7,5 @@ public interface SalesReportMinProjection {
 	Long getId();
 	LocalDate getDate();
 	Double getAmount();
-	String getName();
-	
+	String getSellerName();
 }

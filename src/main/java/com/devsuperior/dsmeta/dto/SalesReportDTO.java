@@ -26,8 +26,6 @@ import com.devsuperior.dsmeta.projections.SalesReportMinProjection;
 			this.sellerName = sellerName;
 		}
 
-
-
 		public SalesReportDTO(Sale sale) {
 			id = sale.getId();
 			date = sale.getDate();
@@ -35,13 +33,14 @@ import com.devsuperior.dsmeta.projections.SalesReportMinProjection;
 			sellerName = sale.getSeller().getName();
 		}
 		
+		
 		public SalesReportDTO(SalesReportMinProjection projection) {
 			id = projection.getId();
 			date = projection.getDate();
 			amount = projection.getAmount();
-			sellerName = projection.getName();
+			sellerName = projection.getSellerName();
 		}
-				
+		
 
 		public Long getId() {
 			return id;

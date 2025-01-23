@@ -38,15 +38,25 @@ public class SaleService {
 		
 		LocalDate max = maxDate.isEmpty() ? today() : LocalDate.parse(maxDate); 
 						
-		Page<SalesReportDTO> dto;
-		if(name.isEmpty()) {
-			dto = repository.searchReport(min, max, name, pageable);
-			for(SalesReportDTO obj : dto) {
-				obj.setSellerName("");
-			}
+		Page<SalesReportDTO> dto = name.isEmpty()?
+				repository.searchReport(min, max, name, pageable)
+				.map(x -> {
+					x.setSellerName("");
+					return x;
+				}):
+				repository.searchReport(min, max, name, pageable);
+		
+		
+		/*if(name.isEmpty()) {
+			dto = repository.searchReport(min, max, name, pageable)
+					.map(x -> {
+						x.setSellerName("");
+						return x
+					});
 		}else {
 			dto = repository.searchReport(min, max, name, pageable);
 		}
+		*/
 		return dto;
 	}
 	

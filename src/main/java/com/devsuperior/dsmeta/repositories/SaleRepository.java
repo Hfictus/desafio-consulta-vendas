@@ -14,7 +14,7 @@ import com.devsuperior.dsmeta.entities.Sale;
 import com.devsuperior.dsmeta.projections.SalesSummaryMinProjection;
 
 public interface SaleRepository extends JpaRepository<Sale, Long> {
-		
+	//JPQL
 	@Query("SELECT new com.devsuperior.dsmeta.dto.SalesReportDTO(obj.id, obj.date, obj.amount, obj.seller.name) "
 			+ "FROM Sale obj "
 			+ "WHERE obj.date BETWEEN :minDate AND :maxDate "
