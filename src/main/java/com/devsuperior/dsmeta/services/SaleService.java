@@ -32,32 +32,9 @@ public class SaleService {
 	}
 		
 	public Page<SalesReportDTO> getReport(String minDate, String maxDate, String name, Pageable pageable) {
-		LocalDate min = minDate.isEmpty() ?
-			todayMinusYear(maxDate.isEmpty() ? today() : LocalDate.parse(maxDate)):
-			LocalDate.parse(minDate);
-		
-		LocalDate max = maxDate.isEmpty() ? today() : LocalDate.parse(maxDate); 
-						
-		Page<SalesReportDTO> dto = name.isEmpty()?
-				repository.searchReport(min, max, name, pageable)
-				.map(x -> {
-					x.setSellerName("");
-					return x;
-				}):
-				repository.searchReport(min, max, name, pageable);
-		
-		
-		/*if(name.isEmpty()) {
-			dto = repository.searchReport(min, max, name, pageable)
-					.map(x -> {
-						x.setSellerName("");
-						return x
-					});
-		}else {
-			dto = repository.searchReport(min, max, name, pageable);
-		}
-		*/
-		return dto;
+		LocalDate min = defineMinDate(minDate, maxDate);
+		LocalDate max = defineMaxDate(maxDate);
+		return repository.searchReport(min, max, name, pageable);
 	}
 	
 	//getSummary(String minDate, String maxDate) -> JPQL
@@ -66,7 +43,15 @@ public class SaleService {
 		List<SalesSummaryMinProjection> list = repository.searchSummary();
 		return list.stream().map(x -> new SalesSummaryDTO(x)).collect(Collectors.toList());
 	}
-
+	
+	private LocalDate defineMinDate(String minDate, String maxDate) {
+		return minDate.isEmpty() ?
+		todayMinusYear(maxDate.isEmpty() ? today() : LocalDate.parse(maxDate)):
+		LocalDate.parse(minDate);
+	}
+	private LocalDate defineMaxDate(String maxDate) {
+		return maxDate.isEmpty() ? today() : LocalDate.parse(maxDate);
+	}
 		
 	private LocalDate today() {
 		return LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault());
@@ -74,6 +59,4 @@ public class SaleService {
 	private LocalDate todayMinusYear(LocalDate maxDate) {
 		return maxDate.minusYears(1L);
 	}
-	
-	
 }
