@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,7 +15,6 @@ import com.devsuperior.dsmeta.dto.SaleMinDTO;
 import com.devsuperior.dsmeta.dto.SalesReportDTO;
 import com.devsuperior.dsmeta.dto.SalesSummaryDTO;
 import com.devsuperior.dsmeta.entities.Sale;
-import com.devsuperior.dsmeta.projections.SalesSummaryMinProjection;
 import com.devsuperior.dsmeta.repositories.SaleRepository;
 
 @Service
@@ -37,11 +35,10 @@ public class SaleService {
 		return repository.searchReport(min, max, name, pageable);
 	}
 	
-	//getSummary(String minDate, String maxDate) -> JPQL
-	public List<SalesSummaryDTO> getSummary() {
-
-		List<SalesSummaryMinProjection> list = repository.searchSummary();
-		return list.stream().map(x -> new SalesSummaryDTO(x)).collect(Collectors.toList());
+	public List<SalesSummaryDTO> getSummary(String minDate, String maxDate) {
+		return repository.searchSummary(
+				defineMinDate(minDate, maxDate),
+				defineMaxDate(maxDate));
 	}
 	
 	private LocalDate defineMinDate(String minDate, String maxDate) {

@@ -10,11 +10,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.devsuperior.dsmeta.dto.SalesReportDTO;
+import com.devsuperior.dsmeta.dto.SalesSummaryDTO;
 import com.devsuperior.dsmeta.entities.Sale;
-import com.devsuperior.dsmeta.projections.SalesSummaryMinProjection;
 
 public interface SaleRepository extends JpaRepository<Sale, Long> {
-	//JPQL
+	
+	
+	//getReport JPQL
 	@Query("SELECT new com.devsuperior.dsmeta.dto.SalesReportDTO(obj.id, obj.date, obj.amount, obj.seller.name) "
 			+ "FROM Sale obj "
 			+ "WHERE obj.date BETWEEN :minDate AND :maxDate "
@@ -25,8 +27,19 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
 			@Param("name") String name,
 			Pageable pageable);
 	
+	//getSummary JPQL
+	@Query("SELECT new com.devsuperior.dsmeta.dto.SalesSummaryDTO(obj.seller.name, SUM(obj.amount)) "
+			+ "FROM Sale obj "
+			+ "WHERE obj.date BETWEEN :minDate AND :maxDate "
+			+ "GROUP BY obj.seller.name ")
+	List<SalesSummaryDTO> searchSummary(
+			@Param("minDate") LocalDate minDate,
+			@Param("maxDate") LocalDate maxDate);
 	
-	//teste:
+	
+	
+	
+	/*getSummary SQL
 	@Query(nativeQuery = true, value = "SELECT tb_seller.name, SUM(tb_sales.amount) "
 			+ "FROM tb_sales "
 			+ "INNER JOIN tb_seller "
@@ -35,5 +48,6 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
 			+ "GROUP BY tb_seller.name "
 			+ "ORDER BY tb_seller.name")
 	List<SalesSummaryMinProjection> searchSummary();
+	*/
 		
 }
