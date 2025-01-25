@@ -17,6 +17,9 @@ import com.devsuperior.dsmeta.dto.SalesSummaryDTO;
 import com.devsuperior.dsmeta.entities.Sale;
 import com.devsuperior.dsmeta.repositories.SaleRepository;
 
+//import com.devsuperior.dsmeta.projections.SalesReportMinProjection;
+//import com.devsuperior.dsmeta.projections.SalesSummaryMinProjection;
+
 @Service
 public class SaleService {
 
@@ -28,19 +31,39 @@ public class SaleService {
 		Sale entity = result.get();
 		return new SaleMinDTO(entity);
 	}
-		
+	
+	/*Report SQL
+	public Page<SalesReportDTO> getReport(String minDate, String maxDate, String name, Pageable pageable) {
+		LocalDate min = defineMinDate(minDate, maxDate);
+		LocalDate max = defineMaxDate(maxDate);
+		Page<SalesReportMinProjection> project = repository.searchReport(min, max, name, pageable);
+		return project.map(x -> new SalesReportDTO(x));
+	}
+	*/
+	
+	//Report JPQL
 	public Page<SalesReportDTO> getReport(String minDate, String maxDate, String name, Pageable pageable) {
 		LocalDate min = defineMinDate(minDate, maxDate);
 		LocalDate max = defineMaxDate(maxDate);
 		return repository.searchReport(min, max, name, pageable);
 	}
+		
+	/*Summary SQL
+	public List<SalesSummaryDTO> getSummary(String minDate, String maxDate) {
+		List<SalesSummaryMinProjection> project = repository.searchSummary(
+				defineMinDate(minDate, maxDate),
+				defineMaxDate(maxDate));
+		return project.stream().map(x -> new SalesSummaryDTO(x)).collect(Collectors.toList());
+	}
+	*/
 	
+	//Summary JPQL
 	public List<SalesSummaryDTO> getSummary(String minDate, String maxDate) {
 		return repository.searchSummary(
 				defineMinDate(minDate, maxDate),
 				defineMaxDate(maxDate));
 	}
-	
+		
 	private LocalDate defineMinDate(String minDate, String maxDate) {
 		return minDate.isEmpty() ?
 		todayMinusYear(maxDate.isEmpty() ? today() : LocalDate.parse(maxDate)):

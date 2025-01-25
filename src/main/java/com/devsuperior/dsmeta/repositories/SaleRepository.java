@@ -13,10 +13,24 @@ import com.devsuperior.dsmeta.dto.SalesReportDTO;
 import com.devsuperior.dsmeta.dto.SalesSummaryDTO;
 import com.devsuperior.dsmeta.entities.Sale;
 
+//import com.devsuperior.dsmeta.projections.SalesReportMinProjection;
+//import com.devsuperior.dsmeta.projections.SalesSummaryMinProjection;
+
+
 public interface SaleRepository extends JpaRepository<Sale, Long> {
+
+	/*Report SQL
+	@Query(nativeQuery = true, value = "SELECT tb_sales.id AS id, tb_sales.date AS date, tb_sales.amount AS amount, tb_seller.name AS sellerName "
+			+ "FROM tb_sales "
+			+ "INNER JOIN tb_seller "
+			+ "ON tb_sales.seller_id = tb_seller.id "
+			+ "WHERE tb_sales.date BETWEEN :min AND :max "
+			+ "AND UPPER(tb_seller.name) LIKE UPPER(CONCAT('%', :name, '%')) "
+			+ "ORDER BY tb_sales.id ASC")
+	Page<SalesReportMinProjection> searchReport(LocalDate min, LocalDate max, String name, Pageable pageable);
+	*/
 	
-	
-	//getReport JPQL
+	//Report JPQL
 	@Query("SELECT new com.devsuperior.dsmeta.dto.SalesReportDTO(obj.id, obj.date, obj.amount, obj.seller.name) "
 			+ "FROM Sale obj "
 			+ "WHERE obj.date BETWEEN :minDate AND :maxDate "
@@ -27,7 +41,21 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
 			@Param("name") String name,
 			Pageable pageable);
 	
-	//getSummary JPQL
+	
+	//Summary JPQL
+	
+	/*Summary SQL
+	@Query(nativeQuery = true, value = "SELECT tb_seller.name AS sellerName, SUM(tb_sales.amount) AS total "
+			+ "FROM tb_sales "
+			+ "INNER JOIN tb_seller "
+			+ "ON tb_sales.seller_id = tb_seller.id "
+			+ "WHERE tb_sales.date BETWEEN :min AND :max "
+			+ "GROUP BY tb_seller.name "
+			+ "ORDER BY tb_seller.name")
+	List<SalesSummaryMinProjection> searchSummary(LocalDate min, LocalDate max);
+	*/
+	
+	//Summary JPQL
 	@Query("SELECT new com.devsuperior.dsmeta.dto.SalesSummaryDTO(obj.seller.name, SUM(obj.amount)) "
 			+ "FROM Sale obj "
 			+ "WHERE obj.date BETWEEN :minDate AND :maxDate "
@@ -36,18 +64,5 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
 			@Param("minDate") LocalDate minDate,
 			@Param("maxDate") LocalDate maxDate);
 	
-	
-	
-	
-	/*getSummary SQL
-	@Query(nativeQuery = true, value = "SELECT tb_seller.name, SUM(tb_sales.amount) "
-			+ "FROM tb_sales "
-			+ "INNER JOIN tb_seller "
-			+ "ON tb_sales.seller_id = tb_seller.id "
-			+ "WHERE tb_sales.date BETWEEN '2022-01-01' AND '2022-06-30' "
-			+ "GROUP BY tb_seller.name "
-			+ "ORDER BY tb_seller.name")
-	List<SalesSummaryMinProjection> searchSummary();
-	*/
-		
+
 }

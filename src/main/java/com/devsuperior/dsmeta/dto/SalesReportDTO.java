@@ -1,11 +1,11 @@
 
 	package com.devsuperior.dsmeta.dto;
 	
-	import java.time.LocalDate;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import com.devsuperior.dsmeta.entities.Sale;
-import com.devsuperior.dsmeta.projections.SalesReportMinProjection;
+//import com.devsuperior.dsmeta.projections.SalesReportMinProjection;
 	
 	public class SalesReportDTO {
 		
@@ -34,14 +34,15 @@ import com.devsuperior.dsmeta.projections.SalesReportMinProjection;
 		}
 		
 		
+		/*SQL
 		public SalesReportDTO(SalesReportMinProjection projection) {
 			id = projection.getId();
 			date = projection.getDate();
 			amount = projection.getAmount();
 			sellerName = projection.getSellerName();
 		}
+		*/
 		
-
 		public Long getId() {
 			return id;
 		}
